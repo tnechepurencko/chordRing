@@ -163,3 +163,196 @@ class Registry(object):
             chord__pb2.GCIReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+
+class NodeStub(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.get_finger_table = channel.unary_unary(
+                '/Node/get_finger_table',
+                request_serializer=chord__pb2.Empty.SerializeToString,
+                response_deserializer=chord__pb2.GFTReply.FromString,
+                )
+        self.save = channel.unary_unary(
+                '/Node/save',
+                request_serializer=chord__pb2.SaveRequest.SerializeToString,
+                response_deserializer=chord__pb2.SaveReply.FromString,
+                )
+        self.remove = channel.unary_unary(
+                '/Node/remove',
+                request_serializer=chord__pb2.RemoveRequest.SerializeToString,
+                response_deserializer=chord__pb2.RemoveReply.FromString,
+                )
+        self.find = channel.unary_unary(
+                '/Node/find',
+                request_serializer=chord__pb2.FindRequest.SerializeToString,
+                response_deserializer=chord__pb2.FindReply.FromString,
+                )
+        self.quit = channel.unary_unary(
+                '/Node/quit',
+                request_serializer=chord__pb2.Empty.SerializeToString,
+                response_deserializer=chord__pb2.Empty.FromString,
+                )
+
+
+class NodeServicer(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def get_finger_table(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def save(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def remove(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def find(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def quit(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_NodeServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'get_finger_table': grpc.unary_unary_rpc_method_handler(
+                    servicer.get_finger_table,
+                    request_deserializer=chord__pb2.Empty.FromString,
+                    response_serializer=chord__pb2.GFTReply.SerializeToString,
+            ),
+            'save': grpc.unary_unary_rpc_method_handler(
+                    servicer.save,
+                    request_deserializer=chord__pb2.SaveRequest.FromString,
+                    response_serializer=chord__pb2.SaveReply.SerializeToString,
+            ),
+            'remove': grpc.unary_unary_rpc_method_handler(
+                    servicer.remove,
+                    request_deserializer=chord__pb2.RemoveRequest.FromString,
+                    response_serializer=chord__pb2.RemoveReply.SerializeToString,
+            ),
+            'find': grpc.unary_unary_rpc_method_handler(
+                    servicer.find,
+                    request_deserializer=chord__pb2.FindRequest.FromString,
+                    response_serializer=chord__pb2.FindReply.SerializeToString,
+            ),
+            'quit': grpc.unary_unary_rpc_method_handler(
+                    servicer.quit,
+                    request_deserializer=chord__pb2.Empty.FromString,
+                    response_serializer=chord__pb2.Empty.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'Node', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+
+
+ # This class is part of an EXPERIMENTAL API.
+class Node(object):
+    """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def get_finger_table(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/Node/get_finger_table',
+            chord__pb2.Empty.SerializeToString,
+            chord__pb2.GFTReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def save(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/Node/save',
+            chord__pb2.SaveRequest.SerializeToString,
+            chord__pb2.SaveReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def remove(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/Node/remove',
+            chord__pb2.RemoveRequest.SerializeToString,
+            chord__pb2.RemoveReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def find(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/Node/find',
+            chord__pb2.FindRequest.SerializeToString,
+            chord__pb2.FindReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def quit(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/Node/quit',
+            chord__pb2.Empty.SerializeToString,
+            chord__pb2.Empty.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

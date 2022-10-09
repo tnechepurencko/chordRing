@@ -13,35 +13,49 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0b\x63hord.proto\"\x07\n\x05\x45mpty\"$\n\x08GCIReply\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04\x61\x64\x64r\x18\x02 \x01(\t\"\x18\n\nPFTRequest\x12\n\n\x02id\x18\x01 \x01(\x05\"T\n\x08PFTReply\x12\x0e\n\x06predID\x18\x01 \x01(\x05\x12\x18\n\x02\x66t\x18\x02 \x03(\x0b\x32\x0c.PFTReply.FT\x1a\x1e\n\x02\x46T\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04\x61\x64\x64r\x18\x02 \x01(\t\"/\n\x0fRegisterRequest\x12\x0e\n\x06ipaddr\x18\x01 \x01(\t\x12\x0c\n\x04port\x18\x02 \x01(\t\"\xc6\x01\n\rRegisterReply\x12,\n\x07success\x18\x01 \x01(\x0b\x32\x16.RegisterReply.SuccessH\x00\x88\x01\x01\x12(\n\x05\x65rror\x18\x02 \x01(\x0b\x32\x14.RegisterReply.ErrorH\x01\x88\x01\x01\x1a \n\x07Success\x12\n\n\x02id\x18\x01 \x01(\x05\x12\t\n\x01m\x18\x02 \x01(\x05\x1a%\n\x05\x45rror\x12\r\n\x05\x62\x61\x64Id\x18\x01 \x01(\x05\x12\r\n\x05\x65rror\x18\x02 \x01(\tB\n\n\x08_successB\x08\n\x06_error\"\x1f\n\x11\x44\x65registerRequest\x12\n\n\x02id\x18\x01 \x01(\x05\")\n\x0f\x44\x65registerReply\x12\t\n\x01\x62\x18\x01 \x01(\x08\x12\x0b\n\x03msg\x18\x02 \x01(\t2\xc2\x01\n\x08Registry\x12,\n\x08register\x12\x10.RegisterRequest\x1a\x0e.RegisterReply\x12\x32\n\nderegister\x12\x12.DeregisterRequest\x1a\x10.DeregisterReply\x12/\n\x15populate_finger_table\x12\x0b.PFTRequest\x1a\t.PFTReply\x12#\n\x0eget_chord_info\x12\x06.Empty\x1a\t.GCIReplyb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0b\x63hord.proto\"k\n\tFindReply\x12\x0c\n\x04stat\x18\x01 \x01(\x08\x12\x0f\n\x02id\x18\x02 \x01(\x05H\x00\x88\x01\x01\x12\x11\n\x04\x61\x64\x64r\x18\x03 \x01(\tH\x01\x88\x01\x01\x12\x12\n\x05\x65rror\x18\x04 \x01(\tH\x02\x88\x01\x01\x42\x05\n\x03_idB\x07\n\x05_addrB\x08\n\x06_error\"\x1a\n\x0b\x46indRequest\x12\x0b\n\x03key\x18\x01 \x01(\t\"Q\n\x0bRemoveReply\x12\x0c\n\x04stat\x18\x01 \x01(\x08\x12\x0f\n\x02id\x18\x02 \x01(\x05H\x00\x88\x01\x01\x12\x12\n\x05\x65rror\x18\x03 \x01(\tH\x01\x88\x01\x01\x42\x05\n\x03_idB\x08\n\x06_error\"\x1c\n\rRemoveRequest\x12\x0b\n\x03key\x18\x01 \x01(\t\"(\n\x0bSaveRequest\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x0c\n\x04text\x18\x02 \x01(\t\"O\n\tSaveReply\x12\x0c\n\x04stat\x18\x01 \x01(\x08\x12\x0f\n\x02id\x18\x02 \x01(\x05H\x00\x88\x01\x01\x12\x12\n\x05\x65rror\x18\x03 \x01(\tH\x01\x88\x01\x01\x42\x05\n\x03_idB\x08\n\x06_error\"D\n\x08GFTReply\x12\x18\n\x02\x66t\x18\x01 \x03(\x0b\x32\x0c.GFTReply.FT\x1a\x1e\n\x02\x46T\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04\x61\x64\x64r\x18\x02 \x01(\t\"\x07\n\x05\x45mpty\"$\n\x08GCIReply\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04\x61\x64\x64r\x18\x02 \x01(\t\"\x18\n\nPFTRequest\x12\n\n\x02id\x18\x01 \x01(\x05\"T\n\x08PFTReply\x12\x0e\n\x06predID\x18\x01 \x01(\x05\x12\x18\n\x02\x66t\x18\x02 \x03(\x0b\x32\x0c.PFTReply.FT\x1a\x1e\n\x02\x46T\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04\x61\x64\x64r\x18\x02 \x01(\t\"/\n\x0fRegisterRequest\x12\x0e\n\x06ipaddr\x18\x01 \x01(\t\x12\x0c\n\x04port\x18\x02 \x01(\t\"O\n\rRegisterReply\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0e\n\x01m\x18\x02 \x01(\x05H\x00\x88\x01\x01\x12\x12\n\x05\x65rror\x18\x03 \x01(\tH\x01\x88\x01\x01\x42\x04\n\x02_mB\x08\n\x06_error\"\x1f\n\x11\x44\x65registerRequest\x12\n\n\x02id\x18\x01 \x01(\x05\")\n\x0f\x44\x65registerReply\x12\t\n\x01\x62\x18\x01 \x01(\x08\x12\x0b\n\x03msg\x18\x02 \x01(\t2\xc2\x01\n\x08Registry\x12,\n\x08register\x12\x10.RegisterRequest\x1a\x0e.RegisterReply\x12\x32\n\nderegister\x12\x12.DeregisterRequest\x1a\x10.DeregisterReply\x12/\n\x15populate_finger_table\x12\x0b.PFTRequest\x1a\t.PFTReply\x12#\n\x0eget_chord_info\x12\x06.Empty\x1a\t.GCIReply2\xb1\x01\n\x04Node\x12%\n\x10get_finger_table\x12\x06.Empty\x1a\t.GFTReply\x12 \n\x04save\x12\x0c.SaveRequest\x1a\n.SaveReply\x12&\n\x06remove\x12\x0e.RemoveRequest\x1a\x0c.RemoveReply\x12 \n\x04\x66ind\x12\x0c.FindRequest\x1a\n.FindReply\x12\x16\n\x04quit\x12\x06.Empty\x1a\x06.Emptyb\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'chord_pb2', globals())
 if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
-  _EMPTY._serialized_start=15
-  _EMPTY._serialized_end=22
-  _GCIREPLY._serialized_start=24
-  _GCIREPLY._serialized_end=60
-  _PFTREQUEST._serialized_start=62
-  _PFTREQUEST._serialized_end=86
-  _PFTREPLY._serialized_start=88
-  _PFTREPLY._serialized_end=172
-  _PFTREPLY_FT._serialized_start=142
-  _PFTREPLY_FT._serialized_end=172
-  _REGISTERREQUEST._serialized_start=174
-  _REGISTERREQUEST._serialized_end=221
-  _REGISTERREPLY._serialized_start=224
-  _REGISTERREPLY._serialized_end=422
-  _REGISTERREPLY_SUCCESS._serialized_start=329
-  _REGISTERREPLY_SUCCESS._serialized_end=361
-  _REGISTERREPLY_ERROR._serialized_start=363
-  _REGISTERREPLY_ERROR._serialized_end=400
-  _DEREGISTERREQUEST._serialized_start=424
-  _DEREGISTERREQUEST._serialized_end=455
-  _DEREGISTERREPLY._serialized_start=457
-  _DEREGISTERREPLY._serialized_end=498
-  _REGISTRY._serialized_start=501
-  _REGISTRY._serialized_end=695
+  _FINDREPLY._serialized_start=15
+  _FINDREPLY._serialized_end=122
+  _FINDREQUEST._serialized_start=124
+  _FINDREQUEST._serialized_end=150
+  _REMOVEREPLY._serialized_start=152
+  _REMOVEREPLY._serialized_end=233
+  _REMOVEREQUEST._serialized_start=235
+  _REMOVEREQUEST._serialized_end=263
+  _SAVEREQUEST._serialized_start=265
+  _SAVEREQUEST._serialized_end=305
+  _SAVEREPLY._serialized_start=307
+  _SAVEREPLY._serialized_end=386
+  _GFTREPLY._serialized_start=388
+  _GFTREPLY._serialized_end=456
+  _GFTREPLY_FT._serialized_start=426
+  _GFTREPLY_FT._serialized_end=456
+  _EMPTY._serialized_start=458
+  _EMPTY._serialized_end=465
+  _GCIREPLY._serialized_start=467
+  _GCIREPLY._serialized_end=503
+  _PFTREQUEST._serialized_start=505
+  _PFTREQUEST._serialized_end=529
+  _PFTREPLY._serialized_start=531
+  _PFTREPLY._serialized_end=615
+  _PFTREPLY_FT._serialized_start=426
+  _PFTREPLY_FT._serialized_end=456
+  _REGISTERREQUEST._serialized_start=617
+  _REGISTERREQUEST._serialized_end=664
+  _REGISTERREPLY._serialized_start=666
+  _REGISTERREPLY._serialized_end=745
+  _DEREGISTERREQUEST._serialized_start=747
+  _DEREGISTERREQUEST._serialized_end=778
+  _DEREGISTERREPLY._serialized_start=780
+  _DEREGISTERREPLY._serialized_end=821
+  _REGISTRY._serialized_start=824
+  _REGISTRY._serialized_end=1018
+  _NODE._serialized_start=1021
+  _NODE._serialized_end=1198
 # @@protoc_insertion_point(module_scope)
