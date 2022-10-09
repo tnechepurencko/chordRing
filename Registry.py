@@ -52,6 +52,8 @@ def populate_finger_table(node_id):
 def get_chord_info():
     return [(key, id_ipaddr_port_dict[key]) for key in id_ipaddr_port_dict.keys()]
 
+def hello_world():
+    print('Tanya umnaya')
 
 
 
