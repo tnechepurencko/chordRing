@@ -59,8 +59,12 @@ message GFTReply {
 message Empty {}
 
 message GCIReply {
-    int32 id = 1;
-    string addr = 2;
+    repeated CI ci = 1;
+
+    message CI {
+        int32 id = 1;
+        string addr = 2;
+    }
 }
 
 message PFTRequest {
@@ -93,7 +97,7 @@ message DeregisterRequest {
 }
 
 message DeregisterReply {
-    bool b = 1;
+    bool stat = 1;
     string msg = 2;
 }
 
