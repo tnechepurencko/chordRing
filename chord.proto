@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+service Registry {
+    rpc register(RegisterRequest) returns (RegisterReply);
+    rpc deregister(DeregisterRequest) returns (DeregisterReply);
+    rpc populate_finger_table(PFTRequest) returns (PFTReply);
+    rpc get_chord_info(Empty) returns (GCIReply);
+}
+
+message Empty {}
+
+message GCIReply {
+    int32 id = 1;
+    string addr = 2;
+}
+
+message PFTRequest {
+    int32 id = 1;
+}
+
+message PFTReply {
+    int32 predID = 1;
+    repeated FT ft = 2;
+
+    message FT {
+        int32 id = 1;
+        string addr = 2;
+    }
+}
+
+message RegisterRequest {
+    string ipaddr = 1;
+    string port = 2;
+}
+
+message RegisterReply {
+    optional Success success = 1;
+    optional Error error = 2;
+
+    message Success {
+        int32 id = 1;
+        int32 m = 2;
+    }
+
+    message Error {
+        int32 badId = 1;
+        string error = 2;
+    }
+}
+
+message DeregisterRequest {
+    int32 id = 1;
+}
+
+message DeregisterReply {
+    bool b = 1;
+    string msg = 2;
+}
+
+
+
