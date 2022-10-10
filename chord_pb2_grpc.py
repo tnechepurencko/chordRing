@@ -194,11 +194,6 @@ class NodeStub(object):
                 request_serializer=chord__pb2.FindRequest.SerializeToString,
                 response_deserializer=chord__pb2.FindReply.FromString,
                 )
-        self.quit = channel.unary_unary(
-                '/Node/quit',
-                request_serializer=chord__pb2.Empty.SerializeToString,
-                response_deserializer=chord__pb2.Empty.FromString,
-                )
 
 
 class NodeServicer(object):
@@ -228,12 +223,6 @@ class NodeServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def quit(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
 
 def add_NodeServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -256,11 +245,6 @@ def add_NodeServicer_to_server(servicer, server):
                     servicer.find,
                     request_deserializer=chord__pb2.FindRequest.FromString,
                     response_serializer=chord__pb2.FindReply.SerializeToString,
-            ),
-            'quit': grpc.unary_unary_rpc_method_handler(
-                    servicer.quit,
-                    request_deserializer=chord__pb2.Empty.FromString,
-                    response_serializer=chord__pb2.Empty.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -337,22 +321,5 @@ class Node(object):
         return grpc.experimental.unary_unary(request, target, '/Node/find',
             chord__pb2.FindRequest.SerializeToString,
             chord__pb2.FindReply.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-    @staticmethod
-    def quit(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/Node/quit',
-            chord__pb2.Empty.SerializeToString,
-            chord__pb2.Empty.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

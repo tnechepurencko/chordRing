@@ -12,7 +12,6 @@ service Node {
     rpc save(SaveRequest) returns (SaveReply);
     rpc remove(RemoveRequest) returns (RemoveReply);
     rpc find(FindRequest) returns (FindReply);
-    rpc quit(Empty) returns (Empty);
 }
 
 message FindReply {

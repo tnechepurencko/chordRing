@@ -1,16 +1,9 @@
 from concurrent import futures
-
 import grpc
-
 import chord_pb2_grpc as pb2_grpc
 import chord_pb2 as pb2
 import sys
 import random
-
-port = sys.argv[1]
-m = int(sys.argv[2])
-
-id_ipaddr_port_dict = dict()
 
 
 class Registry(pb2_grpc.RegistryServicer):
@@ -46,7 +39,7 @@ class Registry(pb2_grpc.RegistryServicer):
         if node_id == ids[-1]:
             return ids[0]
         for id in ids:
-            if id > node_id:
+            if id >= node_id:
                 return id
 
     @staticmethod
@@ -61,7 +54,7 @@ class Registry(pb2_grpc.RegistryServicer):
     def populate_finger_table(self, request, context):
         node_id = request.id
         finger_table_ids = set(self.succ_id((node_id + 2 ** (i - 1)) % (2 ** m)) for i in range(1, m + 1))
-        finger_table = [{'id': id, 'addr': id_ipaddr_port_dict[id]} for id in finger_table_ids]
+        finger_table = [{'id': id, 'addr': id_ipaddr_port_dict[id]} for id in finger_table_ids]  # TODO correct REPEATED stuff
         reply = {'predID': self.pred_id(node_id), 'ft': finger_table}
         return pb2.PFTReply(**reply)
 
@@ -72,8 +65,9 @@ class Registry(pb2_grpc.RegistryServicer):
 
 
 if __name__ == '__main__':
-    # port = sys.argv[1]
-    port = '5555'
+    port = sys.argv[1]
+    m = int(sys.argv[2])
+    id_ipaddr_port_dict = dict()
 
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     pb2_grpc.add_RegistryServicer_to_server(Registry(), server)
