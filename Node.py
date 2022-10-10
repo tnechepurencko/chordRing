@@ -14,7 +14,7 @@ stub = pb2_grpc.RegistryStub(channel)
 
 
 class Node(pb2_grpc.NodeServicer):
-    def __init__(self):
+    def __init__(self, port, ipaddr):
         msg = pb2.RegisterRequest(ipaddr=ipaddr, port=port)
         rsp = stub.register(msg)
         self.node_id = rsp.id
@@ -27,10 +27,12 @@ class Node(pb2_grpc.NodeServicer):
         self.pred = rsp.predID
 
         self.saved = dict()
+        self.port = port
+        self.ipaddr = ipaddr
 
     def get_finger_table(self, request, context):
         msg = pb2.PFTRequest(id=self.node_id)
-        rsp = stub.populate_finger_table(msg)  # TODO must be a list if dicts
+        rsp = stub.populate_finger_table(msg)  # TODO must be a list of dicts
         reply = {'ft': rsp.ft}
         return pb2.GFTReply(**reply)
 
@@ -42,40 +44,100 @@ class Node(pb2_grpc.NodeServicer):
 
         if target_id == self.node_id:
             if key in self.saved.keys():
-                reply = {'stat': False, 'error': f'The key {key} is already exist'}
+                reply = {'stat': False, 'error': f'The key \'{key}\' is already exist'}
             else:
                 self.saved[key] = text
                 reply = {'stat': True, 'id': self.node_id}
-        else:
-            msg = pb2.PFTRequest(id=self.node_id)
-            rsp = stub.populate_finger_table(msg)  # TODO must be a list if dicts
-            ft = rsp.ft
+            return pb2.SaveReply(**reply)
 
-            transfer_to = -1
-            for node in ft:
-                if node['id'] == target_id:
-                    transfer_to = target_id
-                    break
+        msg = pb2.PFTRequest(id=self.node_id)
+        rsp = stub.populate_finger_table(msg)  # TODO must be a list of dicts
+        ft = rsp.ft
 
-            if transfer_to == -1:
-                ids = sorted(list(node['id'] for node in ft))
-                if self.node_id == ids[-1]:
-                    transfer_to = ids[0]
-                else:
-                    for id in ids:
-                        if id > self.node_id:
-                            transfer_to = id
+        transfer_to = -1
+        for node in ft:
+            if node['id'] == target_id:
+                transfer_to = target_id
+                break
 
-            self.transfer(transfer_to, target_id, text)  # TODO make transfer
+        if transfer_to == -1:
+            ids = sorted(list(node['id'] for node in ft))
+            if self.node_id == ids[-1]:
+                transfer_to = ids[0]
+            else:
+                for id in ids:
+                    if id > self.node_id:
+                        transfer_to = id
 
-
-
+        self.save_transfer(transfer_to, key, text)  # TODO make transfer
 
     def remove(self, request, context):
-        pass
+        key = request.key
+        hash_value = zlib.adler32(key.encode())
+        target_id = hash_value % 2 ** self.m
+
+        if target_id == self.node_id:
+            if key not in self.saved.keys():
+                reply = {'stat': False, 'error': f'The key \'{key}\' does not exist'}
+            else:
+                self.saved.pop(key)
+                reply = {'stat': True, 'id': self.node_id}
+            return pb2.RemoveReply(**reply)
+
+        msg = pb2.PFTRequest(id=self.node_id)
+        rsp = stub.populate_finger_table(msg)  # TODO must be a list of dicts
+        ft = rsp.ft
+
+        transfer_to = -1
+        for node in ft:
+            if node['id'] == target_id:
+                transfer_to = target_id
+                break
+
+        if transfer_to == -1:
+            ids = sorted(list(node['id'] for node in ft))
+            if self.node_id == ids[-1]:
+                transfer_to = ids[0]
+            else:
+                for id in ids:
+                    if id > self.node_id:
+                        transfer_to = id
+
+        self.remove_transfer(transfer_to, key)  # TODO make transfer
 
     def find(self, request, context):
-        pass
+        key = request.key
+        hash_value = zlib.adler32(key.encode())
+        target_id = hash_value % 2 ** self.m
+
+        if target_id == self.node_id:
+            if key not in self.saved.keys():
+                reply = {'stat': False, 'error': f'The key \'{key}\' does not exist'}
+            else:
+                self.saved.pop(key)
+                reply = {'stat': True, 'id': self.node_id, 'addr': f'{self.ipaddr}:{self.port}'}
+            return pb2.RemoveReply(**reply)
+
+        msg = pb2.PFTRequest(id=self.node_id)
+        rsp = stub.populate_finger_table(msg)  # TODO must be a list of dicts
+        ft = rsp.ft
+
+        transfer_to = -1
+        for node in ft:
+            if node['id'] == target_id:
+                transfer_to = target_id
+                break
+
+        if transfer_to == -1:
+            ids = sorted(list(node['id'] for node in ft))
+            if self.node_id == ids[-1]:
+                transfer_to = ids[0]
+            else:
+                for id in ids:
+                    if id > self.node_id:
+                        transfer_to = id
+
+        self.find_transfer(transfer_to, key)  # TODO make transfer
 
     def quit(self):
         msg = pb2.DeregisterRequest(id=self.node_id)
