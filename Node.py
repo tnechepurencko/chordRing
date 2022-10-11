@@ -173,9 +173,26 @@ class Node(pb2_grpc.NodeServicer):
         print('Quitting')
         sys.exit(0)
 
-    def save_transfer(self, target_ip, key, text):
+    @staticmethod
+    def save_transfer(target_ip, key, text):
         node_channel = grpc.insecure_channel(target_ip)
         node_stub = pb2_grpc.NodeStub(node_channel)
         msg = pb2.SaveRequest(key=key, text=text)
         response = node_stub.save(msg)
+        print(response)
+
+    @staticmethod
+    def remove_transfer(target_ip, key):
+        node_channel = grpc.insecure_channel(target_ip)
+        node_stub = pb2_grpc.NodeStub(node_channel)
+        msg = pb2.RemoveRequest(key=key)
+        response = node_stub.remove(msg)
+        print(response)
+
+    @staticmethod
+    def find_transfer(target_ip, key):
+        node_channel = grpc.insecure_channel(target_ip)
+        node_stub = pb2_grpc.NodeStub(node_channel)
+        msg = pb2.FindRequest(key=key)
+        response = node_stub.find(msg)
         print(response)
