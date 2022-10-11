@@ -68,8 +68,12 @@ class Node(pb2_grpc.NodeServicer):
                 for id in ids:
                     if id < target_id:
                         transfer_to = id
+        for node in ft:
+            if node['id'] == transfer_to:
+                target_ip = node['ip']
+                break
 
-        self.save_transfer(transfer_to, key, text)  # TODO make transfer
+        self.save_transfer(target_ip, key, text)  # TODO make transfer
 
     def remove(self, request, context):
         key = request.key
@@ -147,12 +151,9 @@ class Node(pb2_grpc.NodeServicer):
         print('Quitting')
         sys.exit(0)
 
-
-
-
-
-
-
-
-
-
+    def save_transfer(self, target_ip, key, text):
+        node_channel = grpc.insecure_channel(target_ip)
+        node_stub = pb2_grpc.NodeStub(node_channel)
+        msg = pb2.SaveRequest(key=key, text=text)
+        response = node_stub.save(msg)
+        print(response)
