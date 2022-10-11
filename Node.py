@@ -62,12 +62,26 @@ class Node(pb2_grpc.NodeServicer):
 
         if transfer_to == -1:
             ids = sorted(list(node['id'] for node in ft), reverse=True)
+            if self.node_id < ids[-1]:
+                succ_id = ids[0]
+            else:
+                for id in ids:
+                    if id < self.node_id:
+                        succ_id = id
+                        break
+
+            if self.node_id < target_id < succ_id:
+                target_id = self
+
+        if transfer_to == -1:
+            ids = sorted(list(node['id'] for node in ft), reverse=True)
             if target_id < ids[-1]:
                 transfer_to = ids[0]
             else:
                 for id in ids:
                     if id < target_id:
                         transfer_to = id
+                        break
         for node in ft:
             if node['id'] == transfer_to:
                 target_ip = node['ip']
@@ -99,13 +113,27 @@ class Node(pb2_grpc.NodeServicer):
                 break
 
         if transfer_to == -1:
-            ids = sorted(list(node['id'] for node in ft))
-            if self.node_id == ids[-1]:
+            ids = sorted(list(node['id'] for node in ft), reverse=True)
+            if self.node_id < ids[-1]:
+                succ_id = ids[0]
+            else:
+                for id in ids:
+                    if id < self.node_id:
+                        succ_id = id
+                        break
+
+            if self.node_id < target_id < succ_id:
+                target_id = self
+
+        if transfer_to == -1:
+            ids = sorted(list(node['id'] for node in ft), reverse=True)
+            if target_id < ids[-1]:
                 transfer_to = ids[0]
             else:
                 for id in ids:
-                    if id > self.node_id:
+                    if id < target_id:
                         transfer_to = id
+                        break
 
         self.remove_transfer(transfer_to, key)  # TODO make transfer
 
@@ -122,24 +150,18 @@ class Node(pb2_grpc.NodeServicer):
                 reply = {'stat': True, 'id': self.node_id, 'addr': f'{self.ipaddr}:{self.port}'}
             return pb2.RemoveReply(**reply)
 
-        msg = pb2.PFTRequest(id=self.node_id)
-        rsp = stub.populate_finger_table(msg)  # TODO must be a list of dicts
-        ft = rsp.ft
+        msg = pb2.Empty()
+        rsp = stub.get_chord_info(msg)  # TODO must be a list of dicts
+        ci = rsp.ci
 
-        transfer_to = -1
-        for node in ft:
-            if node['id'] == target_id:
-                transfer_to = target_id
-                break
-
-        if transfer_to == -1:
-            ids = sorted(list(node['id'] for node in ft))
-            if self.node_id == ids[-1]:
-                transfer_to = ids[0]
-            else:
-                for id in ids:
-                    if id > self.node_id:
-                        transfer_to = id
+        ids = sorted(list(node['id'] for node in ci))
+        if target_id >= ids[-1]:
+            transfer_to = ids[0]
+        else:
+            for id in ids:
+                if id >= target_id:
+                    transfer_to = id
+                    break
 
         self.find_transfer(transfer_to, key)  # TODO make transfer
 

@@ -36,7 +36,7 @@ class Registry(pb2_grpc.RegistryServicer):
     @staticmethod
     def succ_id(node_id):
         ids = sorted(list(id_ipaddr_port_dict.keys()))
-        if node_id == ids[-1]:
+        if node_id >= ids[-1]:
             return ids[0]
         for id in ids:
             if id >= node_id:
@@ -45,7 +45,7 @@ class Registry(pb2_grpc.RegistryServicer):
     @staticmethod
     def pred_id(node_id):
         ids = sorted(list(id_ipaddr_port_dict.keys()), reverse=True)
-        if node_id == ids[-1]:
+        if node_id <= ids[-1]:
             return ids[0]
         for id in ids:
             if id < node_id:
