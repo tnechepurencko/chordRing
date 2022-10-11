@@ -61,12 +61,12 @@ class Node(pb2_grpc.NodeServicer):
                 break
 
         if transfer_to == -1:
-            ids = sorted(list(node['id'] for node in ft))
-            if self.node_id == ids[-1]:
+            ids = sorted(list(node['id'] for node in ft), reverse=True)
+            if target_id < ids[-1]:
                 transfer_to = ids[0]
             else:
                 for id in ids:
-                    if id > self.node_id:
+                    if id < target_id:
                         transfer_to = id
 
         self.save_transfer(transfer_to, key, text)  # TODO make transfer
