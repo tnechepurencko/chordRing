@@ -15,21 +15,33 @@ if __name__ == "__main__":
             command, arg = instruction.split()
 
         if command == "connect":
-            if not connected_registry or not connected_node:
+            if not connected_registry and not connected_node:
                 channel = grpc.insecure_channel(arg)
-                stub = pb2_grpc.RegistryStub(channel)
-                msg = pb2.Empty()
-                response = stub.who_am_i(msg)
-                if response.reply == "Connected to registry":
-                    connected_registry = True
-                    print(response.reply)
-                elif response.reply == "Connected to node":
-                    connected_node = True
-                    print(response.reply)
-                else:
-                    print("wrong address")
-            else:
-                print('already connected')
+                try:
+                    stub = pb2_grpc.RegistryStub(channel)
+                    msg = pb2.Empty()
+                    response = stub.who_am_i(msg)
+                    print(response)
+                except:
+                    stub = pb2_grpc.NodeStub(channel)
+                    msg = pb2.Empty()
+                    response = stub.who_am_i(msg)
+                    print(response)
+            # if not connected_registry or not connected_node:
+            #     channel = grpc.insecure_channel(arg)
+            #     stub = pb2_grpc.RegistryStub(channel)
+            #     msg = pb2.Empty()
+            #     response = stub.who_am_i(msg)
+            #     if response.reply == "Connected to registry":
+            #         connected_registry = True
+            #         print(response.reply)
+            #     elif response.reply == "Connected to node":
+            #         connected_node = True
+            #         print(response.reply)
+            #     else:
+            #         print("wrong address")
+            # else:
+            #     print('already connected')
 
         elif command == "get_info":
             if connected_registry:
