@@ -9,13 +9,14 @@ import random
 class Registry(pb2_grpc.RegistryServicer):
     def register(self, request, context):
         random.seed(0)
-        ipaddr = request.ipaddr
+        node_ipaddr = request.ipaddr
+        node_port = request.port
 
         if len(id_ipaddr_port_dict) < 2 ** m:
             new_id = random.randint(0, 2 ** m - 1)
             while new_id in id_ipaddr_port_dict.keys():
                 new_id = random.randint(0, 2 ** m - 1)
-            id_ipaddr_port_dict[new_id] = f'{ipaddr}:{port}'
+            id_ipaddr_port_dict[new_id] = f'{node_ipaddr}:{node_port}'
             reply = {'id': new_id, 'm': m}
         else:
             reply = {'id': -1, 'error': 'Chord is full'}
@@ -59,9 +60,8 @@ class Registry(pb2_grpc.RegistryServicer):
         return pb2.PFTReply(**reply)
 
     def get_chord_info(self, request, context):
-        chord_info = [{'id': key, 'addr': id_ipaddr_port_dict[key]} for key in id_ipaddr_port_dict.keys()]
-        reply = {'ci': chord_info}
-        return pb2.GCIReply(**reply)
+        chord_info = pb2.GCIReply(ci=[pb2.CI(id=key, addr=id_ipaddr_port_dict[key]) for key in id_ipaddr_port_dict.keys()])
+        return chord_info
 
     def who_am_i(self, request, context):
         reply = {'reply': "Connected to registry"}
@@ -71,6 +71,8 @@ class Registry(pb2_grpc.RegistryServicer):
 if __name__ == '__main__':
     port = sys.argv[1]
     m = int(sys.argv[2])
+    # port = '5000'
+    # m = 5
     id_ipaddr_port_dict = dict()
 
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))

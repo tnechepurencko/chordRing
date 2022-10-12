@@ -63,13 +63,13 @@ message WAIResponse{
 
 message Empty {}
 
+message CI {
+    int32 id = 1;
+    string addr = 2;
+}
+
 message GCIReply {
     repeated CI ci = 1;
-
-    message CI {
-        int32 id = 1;
-        string addr = 2;
-    }
 }
 
 message PFTRequest {

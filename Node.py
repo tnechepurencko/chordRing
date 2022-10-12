@@ -3,14 +3,7 @@ import grpc
 import zlib
 import chord_pb2_grpc as pb2_grpc
 import chord_pb2 as pb2
-
-registry_ipaddr = sys.argv[1].split(':')[0]
-registry_port = sys.argv[1].split(':')[1]
-ipaddr = sys.argv[2].split(':')[0]
-port = sys.argv[2].split(':')[1]
-
-channel = grpc.insecure_channel(f'{registry_ipaddr}:{registry_port}')
-stub = pb2_grpc.RegistryStub(channel)
+from concurrent import futures
 
 
 class Node(pb2_grpc.NodeServicer):
@@ -200,3 +193,22 @@ class Node(pb2_grpc.NodeServicer):
         msg = pb2.FindRequest(key=key)
         response = node_stub.find(msg)
         print(response)
+
+
+if __name__ == '__main__':
+    registry_ipaddr = sys.argv[1].split(':')[0]
+    registry_port = sys.argv[1].split(':')[1]
+    ipaddr = sys.argv[2].split(':')[0]
+    port = sys.argv[2].split(':')[1]
+
+    channel = grpc.insecure_channel(f'{registry_ipaddr}:{registry_port}')
+    stub = pb2_grpc.RegistryStub(channel)
+
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    pb2_grpc.add_NodeServicer_to_server(Node(port, ipaddr), server)
+    server.add_insecure_port(f'{ipaddr}:{port}')
+    server.start()
+    try:
+        server.wait_for_termination()
+    except KeyboardInterrupt:
+        print('shutting down')
