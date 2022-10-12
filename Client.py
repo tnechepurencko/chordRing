@@ -15,37 +15,23 @@ if __name__ == "__main__":
             command, arg = instruction.split()
 
         if command == "connect":  # TODO try to make reconnect
-            if not connected_registry and not connected_node:
-                channel = grpc.insecure_channel(arg)
-                try:
-                    stub = pb2_grpc.RegistryStub(channel)
-                    msg = pb2.Empty()
-                    response = stub.who_am_i(msg)
-                    connected_registry = True
-                    print(response.reply)
-                except:
-                    stub = pb2_grpc.NodeStub(channel)
-                    msg = pb2.Empty()
-                    response = stub.who_am_i(msg)
-                    connected_node = True
-                    print(response.reply)
-            else:
+            if connected_registry or connected_node:
                 channel.close()
                 connected_node = False
                 connected_registry = False
-                channel = grpc.insecure_channel(arg)
-                try:
-                    stub = pb2_grpc.RegistryStub(channel)
-                    msg = pb2.Empty()
-                    response = stub.who_am_i(msg)
-                    connected_registry = True
-                    print(response.reply)
-                except:
-                    stub = pb2_grpc.NodeStub(channel)
-                    msg = pb2.Empty()
-                    response = stub.who_am_i(msg)
-                    connected_node = True
-                    print(response.reply)
+            channel = grpc.insecure_channel(arg)
+            try:
+                stub = pb2_grpc.RegistryStub(channel)
+                msg = pb2.Empty()
+                response = stub.who_am_i(msg)
+                connected_registry = True
+                print(response.reply)
+            except:
+                stub = pb2_grpc.NodeStub(channel)
+                msg = pb2.Empty()
+                response = stub.who_am_i(msg)
+                connected_node = True
+                print(response.reply)
 
         elif command == "get_info":
             if connected_registry:
