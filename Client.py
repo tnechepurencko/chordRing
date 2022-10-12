@@ -32,17 +32,21 @@ if __name__ == "__main__":
                     print("wrong address")
             else:
                 print('already connected')
+
         elif command == "get_info":
             if connected_registry:
                 msg = pb2.Empty()
                 response = stub.get_chord_info(msg)
-                print(response)
+
+                for ci in response.ci:
+                    print(f'{ci.id}:\t{ci.addr}')
             elif connected_node:
                 msg = pb2.Empty()
                 response = stub.get_finger_table(msg)
                 print(response)
             else:
                 print("Not connected to registry/node")
+
         elif command == "save":
             if connected_node:
                 key, text = arg.split()
@@ -51,6 +55,7 @@ if __name__ == "__main__":
                 print(response)
             else:
                 print("Not connected to node")
+
         elif command == "remove":
             if connected_node:
                 msg = pb2.RemoveRequest(key=arg)
@@ -58,6 +63,7 @@ if __name__ == "__main__":
                 print(response)
             else:
                 print("Not connected to node")
+
         elif command == "find":
             if connected_node:
                 msg = pb2.FindRequest(key=arg)
@@ -65,8 +71,10 @@ if __name__ == "__main__":
                 print(response)
             else:
                 print("Not connected to node")
+
         elif command == "quit":
             break
+
         else:
             print("Wrong command")
 

@@ -71,8 +71,6 @@ class Registry(pb2_grpc.RegistryServicer):
 if __name__ == '__main__':
     port = sys.argv[1]
     m = int(sys.argv[2])
-    # port = '5000'
-    # m = 5
     id_ipaddr_port_dict = dict()
 
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
