@@ -15,20 +15,18 @@ if __name__ == "__main__":
             command, arg = instruction.split()
 
         if command == "connect":
-            if not connected_registry:
-                try:
-                    channel = grpc.insecure_channel(arg)
-                    stub = pb2_grpc.RegistryStub(channel)
+            if not connected_registry or not connected_node:
+                channel = grpc.insecure_channel(arg)
+                stub = pb2_grpc.RegistryStub(channel)
+                msg = pb2.Empty()
+                response = stub.who_am_i(msg)
+                if response.reply == "Connected to registry":
                     connected_registry = True
-                    print("Connected to registry")
-                except:
-                    print("wrong address")
-            elif not connected_node:
-                try:
-                    channel = grpc.insecure_channel(arg)
-                    stub = pb2_grpc.NodeStub(channel)
-                    print("Connected to node")
-                except:
+                    print(response.reply)
+                elif response.reply == "Connected to node":
+                    connected_node = True
+                    print(response.reply)
+                else:
                     print("wrong address")
             else:
                 print('already connected')
