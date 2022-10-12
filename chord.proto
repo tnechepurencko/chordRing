@@ -48,17 +48,18 @@ message SaveReply {
     optional string error = 3;
 }
 
+message FT {
+    int32 id = 1;
+    string addr = 2;
+}
+
 message GFTReply {
     repeated FT ft = 1;
-
-    message FT {
-        int32 id = 1;
-        string addr = 2;
-    }
 }
 
 message WAIResponse{
     string reply = 1;
+    optional int32 id = 2;
 }
 
 message Empty {}
@@ -79,11 +80,6 @@ message PFTRequest {
 message PFTReply {
     int32 predID = 1;
     repeated FT ft = 2;
-
-    message FT {
-        int32 id = 1;
-        string addr = 2;
-    }
 }
 
 message RegisterRequest {

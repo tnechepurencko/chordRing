@@ -34,6 +34,11 @@ class RegistryStub(object):
                 request_serializer=chord__pb2.Empty.SerializeToString,
                 response_deserializer=chord__pb2.GCIReply.FromString,
                 )
+        self.who_am_i = channel.unary_unary(
+                '/Registry/who_am_i',
+                request_serializer=chord__pb2.Empty.SerializeToString,
+                response_deserializer=chord__pb2.WAIResponse.FromString,
+                )
 
 
 class RegistryServicer(object):
@@ -63,6 +68,12 @@ class RegistryServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def who_am_i(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_RegistryServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -85,6 +96,11 @@ def add_RegistryServicer_to_server(servicer, server):
                     servicer.get_chord_info,
                     request_deserializer=chord__pb2.Empty.FromString,
                     response_serializer=chord__pb2.GCIReply.SerializeToString,
+            ),
+            'who_am_i': grpc.unary_unary_rpc_method_handler(
+                    servicer.who_am_i,
+                    request_deserializer=chord__pb2.Empty.FromString,
+                    response_serializer=chord__pb2.WAIResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -164,6 +180,23 @@ class Registry(object):
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
+    @staticmethod
+    def who_am_i(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/Registry/who_am_i',
+            chord__pb2.Empty.SerializeToString,
+            chord__pb2.WAIResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
 
 class NodeStub(object):
     """Missing associated documentation comment in .proto file."""
@@ -194,6 +227,11 @@ class NodeStub(object):
                 request_serializer=chord__pb2.FindRequest.SerializeToString,
                 response_deserializer=chord__pb2.FindReply.FromString,
                 )
+        self.who_am_i = channel.unary_unary(
+                '/Node/who_am_i',
+                request_serializer=chord__pb2.Empty.SerializeToString,
+                response_deserializer=chord__pb2.WAIResponse.FromString,
+                )
 
 
 class NodeServicer(object):
@@ -223,6 +261,12 @@ class NodeServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def who_am_i(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_NodeServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -245,6 +289,11 @@ def add_NodeServicer_to_server(servicer, server):
                     servicer.find,
                     request_deserializer=chord__pb2.FindRequest.FromString,
                     response_serializer=chord__pb2.FindReply.SerializeToString,
+            ),
+            'who_am_i': grpc.unary_unary_rpc_method_handler(
+                    servicer.who_am_i,
+                    request_deserializer=chord__pb2.Empty.FromString,
+                    response_serializer=chord__pb2.WAIResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -321,5 +370,22 @@ class Node(object):
         return grpc.experimental.unary_unary(request, target, '/Node/find',
             chord__pb2.FindRequest.SerializeToString,
             chord__pb2.FindReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def who_am_i(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/Node/who_am_i',
+            chord__pb2.Empty.SerializeToString,
+            chord__pb2.WAIResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

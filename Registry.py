@@ -55,9 +55,9 @@ class Registry(pb2_grpc.RegistryServicer):
     def populate_finger_table(self, request, context):
         node_id = request.id
         finger_table_ids = set(self.succ_id((node_id + 2 ** (i - 1)) % (2 ** m)) for i in range(1, m + 1))
-        finger_table = [{'id': id, 'addr': id_ipaddr_port_dict[id]} for id in finger_table_ids]  # TODO correct REPEATED stuff
-        reply = {'predID': self.pred_id(node_id), 'ft': finger_table}
-        return pb2.PFTReply(**reply)
+        finger_table = [pb2.FT(id=node_id, addr=id_ipaddr_port_dict[node_id]) for node_id in finger_table_ids]
+        reply = pb2.PFTReply(predID=self.pred_id(node_id), ft=finger_table)
+        return reply
 
     def get_chord_info(self, request, context):
         chord_info = pb2.GCIReply(ci=[pb2.CI(id=key, addr=id_ipaddr_port_dict[key]) for key in id_ipaddr_port_dict.keys()])

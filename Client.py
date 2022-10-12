@@ -14,46 +14,52 @@ if __name__ == "__main__":
         else:
             command, arg = instruction.split()
 
-        if command == "connect":
+        if command == "connect":  # TODO try to make reconnect
             if not connected_registry and not connected_node:
                 channel = grpc.insecure_channel(arg)
                 try:
                     stub = pb2_grpc.RegistryStub(channel)
                     msg = pb2.Empty()
                     response = stub.who_am_i(msg)
-                    print(response)
+                    connected_registry = True
+                    print(response.reply)
                 except:
                     stub = pb2_grpc.NodeStub(channel)
                     msg = pb2.Empty()
                     response = stub.who_am_i(msg)
-                    print(response)
-            # if not connected_registry or not connected_node:
-            #     channel = grpc.insecure_channel(arg)
-            #     stub = pb2_grpc.RegistryStub(channel)
-            #     msg = pb2.Empty()
-            #     response = stub.who_am_i(msg)
-            #     if response.reply == "Connected to registry":
-            #         connected_registry = True
-            #         print(response.reply)
-            #     elif response.reply == "Connected to node":
-            #         connected_node = True
-            #         print(response.reply)
-            #     else:
-            #         print("wrong address")
-            # else:
-            #     print('already connected')
+                    connected_node = True
+                    print(response.reply)
+            else:
+                channel.close()
+                connected_node = False
+                connected_registry = False
+                channel = grpc.insecure_channel(arg)
+                try:
+                    stub = pb2_grpc.RegistryStub(channel)
+                    msg = pb2.Empty()
+                    response = stub.who_am_i(msg)
+                    connected_registry = True
+                    print(response.reply)
+                except:
+                    stub = pb2_grpc.NodeStub(channel)
+                    msg = pb2.Empty()
+                    response = stub.who_am_i(msg)
+                    connected_node = True
+                    print(response.reply)
 
         elif command == "get_info":
             if connected_registry:
                 msg = pb2.Empty()
                 response = stub.get_chord_info(msg)
-
                 for ci in response.ci:
                     print(f'{ci.id}:\t{ci.addr}')
             elif connected_node:
                 msg = pb2.Empty()
+                wai_response = stub.who_am_i(msg)
                 response = stub.get_finger_table(msg)
-                print(response)
+                print('Node id:', wai_response.id, '\nFinger table:')
+                for ft in response.ft:
+                    print(f'{ft.id}:\t{ft.addr}')
             else:
                 print("Not connected to registry/node")
 

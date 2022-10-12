@@ -80,7 +80,7 @@ class Node(pb2_grpc.NodeServicer):
                 target_ip = node['ip']
                 break
 
-        self.save_transfer(target_ip, key, text)  # TODO make transfer
+        self.save_transfer(target_ip, key, text)
 
     def remove(self, request, context):
         key = request.key
@@ -128,7 +128,7 @@ class Node(pb2_grpc.NodeServicer):
                         transfer_to = id
                         break
 
-        self.remove_transfer(transfer_to, key)  # TODO make transfer
+        self.remove_transfer(transfer_to, key)
 
     def find(self, request, context):
         key = request.key
@@ -156,7 +156,7 @@ class Node(pb2_grpc.NodeServicer):
                     transfer_to = id
                     break
 
-        self.find_transfer(transfer_to, key)  # TODO make transfer
+        self.find_transfer(transfer_to, key)
 
     def quit(self):
         msg = pb2.DeregisterRequest(id=self.node_id)
@@ -167,7 +167,7 @@ class Node(pb2_grpc.NodeServicer):
         sys.exit(0)
 
     def who_am_i(self, request, context):
-        reply = {'reply': "Connected to node"}
+        reply = {'reply': "Connected to node", 'id': self.node_id}
         return pb2.WAIResponse(**reply)
 
     @staticmethod
