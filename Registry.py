@@ -63,6 +63,10 @@ class Registry(pb2_grpc.RegistryServicer):
         reply = {'ci': chord_info}
         return pb2.GCIReply(**reply)
 
+    def who_am_i(self, request, context):
+        reply = {'reply': "Connected to registry"}
+        return pb2.WAIResponse(**reply)
+
 
 if __name__ == '__main__':
     port = sys.argv[1]

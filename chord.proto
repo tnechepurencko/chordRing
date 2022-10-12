@@ -5,6 +5,7 @@ service Registry {
     rpc deregister(DeregisterRequest) returns (DeregisterReply);
     rpc populate_finger_table(PFTRequest) returns (PFTReply);
     rpc get_chord_info(Empty) returns (GCIReply);
+    rpc who_am_i(Empty) returns (WAIResponse);
 }
 
 service Node {
@@ -12,6 +13,7 @@ service Node {
     rpc save(SaveRequest) returns (SaveReply);
     rpc remove(RemoveRequest) returns (RemoveReply);
     rpc find(FindRequest) returns (FindReply);
+    rpc who_am_i(Empty) returns (WAIResponse);
 }
 
 message FindReply {
@@ -53,6 +55,10 @@ message GFTReply {
         int32 id = 1;
         string addr = 2;
     }
+}
+
+message WAIResponse{
+    string reply = 1;
 }
 
 message Empty {}

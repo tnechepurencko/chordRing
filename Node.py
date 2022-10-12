@@ -173,6 +173,10 @@ class Node(pb2_grpc.NodeServicer):
         print('Quitting')
         sys.exit(0)
 
+    def who_am_i(self, request, context):
+        reply = {'reply': "Connected to node"}
+        return pb2.WAIResponse(**reply)
+
     @staticmethod
     def save_transfer(target_ip, key, text):
         node_channel = grpc.insecure_channel(target_ip)
