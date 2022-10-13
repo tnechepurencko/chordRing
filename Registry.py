@@ -37,7 +37,7 @@ class Registry(pb2_grpc.RegistryServicer):
     @staticmethod
     def succ_id(node_id):
         ids = sorted(list(id_ipaddr_port_dict.keys()))
-        if node_id >= ids[-1]:
+        if node_id > ids[-1]:
             return ids[0]
         for id in ids:
             if id >= node_id:
@@ -69,13 +69,13 @@ class Registry(pb2_grpc.RegistryServicer):
 
 
 if __name__ == '__main__':
-    port = sys.argv[1]
+    addr = sys.argv[1]
     m = int(sys.argv[2])
     id_ipaddr_port_dict = dict()
 
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     pb2_grpc.add_RegistryServicer_to_server(Registry(), server)
-    server.add_insecure_port('127.0.0.1:' + port)
+    server.add_insecure_port(addr)
     server.start()
     try:
         server.wait_for_termination()

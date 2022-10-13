@@ -12,9 +12,10 @@ if __name__ == "__main__":
         if len(instruction.split()) == 1:
             command = instruction
         else:
-            command, arg = instruction.split()
+            command = instruction.split()[0]
+            arg = ' '.join(instruction.split()[1:])
 
-        if command == "connect":  # TODO try to make reconnect
+        if command == "connect":
             if connected_registry or connected_node:
                 channel.close()
                 connected_node = False
@@ -51,10 +52,14 @@ if __name__ == "__main__":
 
         elif command == "save":
             if connected_node:
-                key, text = arg.split()
+                key = arg.split()[0][1:len(arg.split()[0]) - 1]
+                text = ' '.join(arg.split()[1:])
                 msg = pb2.SaveRequest(key=key, text=text)
                 response = stub.save(msg)
-                print(response)
+                if response.stat:
+                    print(f'{response.stat}, \"{key}\" is saved in node {response.id}')
+                else:
+                    print(f'{response.stat}, {response.error}')
             else:
                 print("Not connected to node")
 
@@ -62,7 +67,10 @@ if __name__ == "__main__":
             if connected_node:
                 msg = pb2.RemoveRequest(key=arg)
                 response = stub.remove(msg)
-                print(response)
+                if response.stat:
+                    print(f'{response.stat}, \"{arg}\" is removed from node {response.id}')
+                else:
+                    print(f'{response.stat}, {response.error}')
             else:
                 print("Not connected to node")
 
@@ -70,7 +78,10 @@ if __name__ == "__main__":
             if connected_node:
                 msg = pb2.FindRequest(key=arg)
                 response = stub.find(msg)
-                print(response)
+                if response.stat:
+                    print(f'{response.stat}, \"{arg}\" is saved in node {response.id}')
+                else:
+                    print(f'{response.stat}, {response.error}')
             else:
                 print("Not connected to node")
 

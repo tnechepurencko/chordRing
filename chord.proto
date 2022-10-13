@@ -14,6 +14,21 @@ service Node {
     rpc remove(RemoveRequest) returns (RemoveReply);
     rpc find(FindRequest) returns (FindReply);
     rpc who_am_i(Empty) returns (WAIResponse);
+    rpc get_saved_keys(GSKRequest) returns (GCIReply);
+}
+
+message GSKRequest {
+    int32 id = 1;
+}
+
+message GSKReply {
+    bool keysExist = 1;
+    repeated KeyValue kv = 2;
+}
+
+message KeyValue {
+    string key = 1;
+    string value = 2;
 }
 
 message FindReply {

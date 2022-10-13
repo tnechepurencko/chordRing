@@ -232,6 +232,11 @@ class NodeStub(object):
                 request_serializer=chord__pb2.Empty.SerializeToString,
                 response_deserializer=chord__pb2.WAIResponse.FromString,
                 )
+        self.get_saved_keys = channel.unary_unary(
+                '/Node/get_saved_keys',
+                request_serializer=chord__pb2.GSKRequest.SerializeToString,
+                response_deserializer=chord__pb2.GCIReply.FromString,
+                )
 
 
 class NodeServicer(object):
@@ -267,6 +272,12 @@ class NodeServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def get_saved_keys(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_NodeServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -294,6 +305,11 @@ def add_NodeServicer_to_server(servicer, server):
                     servicer.who_am_i,
                     request_deserializer=chord__pb2.Empty.FromString,
                     response_serializer=chord__pb2.WAIResponse.SerializeToString,
+            ),
+            'get_saved_keys': grpc.unary_unary_rpc_method_handler(
+                    servicer.get_saved_keys,
+                    request_deserializer=chord__pb2.GSKRequest.FromString,
+                    response_serializer=chord__pb2.GCIReply.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -387,5 +403,22 @@ class Node(object):
         return grpc.experimental.unary_unary(request, target, '/Node/who_am_i',
             chord__pb2.Empty.SerializeToString,
             chord__pb2.WAIResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def get_saved_keys(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/Node/get_saved_keys',
+            chord__pb2.GSKRequest.SerializeToString,
+            chord__pb2.GCIReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
