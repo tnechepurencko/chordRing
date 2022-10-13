@@ -19,30 +19,10 @@ class Node(pb2_grpc.NodeServicer):
             self.quit()
         self.m = rsp.m
 
-        # msg = pb2.Empty()
-        # rsp = stub.get_chord_info(msg)
-        # info = rsp.ci
         if len(self.chord_info()) > 1:
             self.get_saved_keys_from_successor()
 
-        # msg = pb2.PFTRequest(id=self.node_id)
-        # rsp = stub.populate_finger_table(msg)
-        # self.pred = rsp.predID
-
-    def finger_table(self):
-        msg = pb2.PFTRequest(id=self.node_id)
-        rsp = stub.populate_finger_table(msg)
-        return rsp.ft
-
-    @staticmethod
-    def chord_info():
-        msg = pb2.Empty()
-        rsp = stub.get_chord_info(msg)
-        return rsp.ci
-
     def get_saved_keys_from_successor(self):
-        # msg = pb2.Empty()
-        # rsp = stub.get_chord_info(msg)
         info = self.chord_info()
 
         for node in info:
@@ -54,28 +34,67 @@ class Node(pb2_grpc.NodeServicer):
         channel = grpc.insecure_channel(succ_ip)
         node_stub = pb2_grpc.NodeStub(channel)
         response = node_stub.get_saved_keys(msg)
-        print(response.keysExist)
+        channel.close()
         if response.keysExist:
             for kv in response.kv:
                 self.saved[kv.key] = kv.value
+
+    def transfer_keys_to_successor(self):
+        info = self.chord_info()
+
+        for node in info:
+            if node.id == self.get_successor_id(info, self.node_id + 1):
+                succ_ip = node.addr
+                break
+
+        kv = []
+
+        for key in self.saved.keys():
+            kv.append(pb2.KeyValue(key=key, value=self.saved[key]))
+        if len(kv) > 0:
+            keys_to_transfer = pb2.TSKRequest(keysExist=True, kv=kv)
+        else:
+            keys_to_transfer = pb2.TSKRequest(keysExist=False, kv=[pb2.KeyValue(key='-1', value='-1')])
+
+        msg = keys_to_transfer
+
+        channel = grpc.insecure_channel(succ_ip)
+        node_stub = pb2_grpc.NodeStub(channel)
+        node_stub.transfer_saved_keys(msg)
+        channel.close()
+
+    def transfer_saved_keys(self, request, context):
+        if request.keysExist:
+            for kv in request.kv:
+                self.saved[kv.key] = kv.value
+
+        return pb2.Empty()
 
     def get_saved_keys(self, request, context):
         node_id = request.id
         kv = []
         for key in self.saved.keys():
-            # hash_value = zlib.adler32(key.encode())
-            # target_id = hash_value % 2 ** self.m
             if self.get_target_id(key) <= node_id:
                 kv.append(pb2.KeyValue(key=key, value=self.saved[key]))
-                self.saved.pop(key)
+        for key in kv:
+            self.saved.pop(key.key)
 
         if len(kv) > 0:
             keys_to_transfer = pb2.GSKReply(keysExist=True, kv=kv)
         else:
             keys_to_transfer = pb2.GSKReply(keysExist=False, kv=[pb2.KeyValue(key='-1', value='-1')])
-        # print(keys_to_transfer.keysExist)
-        print(keys_to_transfer)
         return keys_to_transfer
+
+    def finger_table(self):
+        msg = pb2.PFTRequest(id=self.node_id)
+        rsp = stub.populate_finger_table(msg)
+        return rsp.ft
+
+    @staticmethod
+    def chord_info():
+        msg = pb2.Empty()
+        rsp = stub.get_chord_info(msg)
+        return rsp.ci
 
     def get_finger_table(self, request, context):
         # msg = pb2.PFTRequest(id=self.node_id)
@@ -109,12 +128,7 @@ class Node(pb2_grpc.NodeServicer):
         key, text = request.key, request.text
         target_id = self.get_target_id(key)
 
-        # msg = pb2.Empty()
-        # rsp = stub.get_chord_info(msg)
         chord_info = self.chord_info()
-
-        # msg = pb2.PFTRequest(id=self.node_id)
-        # rsp = stub.populate_finger_table(msg)
         ft = self.finger_table()
 
         if self.node_id == self.get_successor_id(chord_info, target_id):
@@ -126,13 +140,7 @@ class Node(pb2_grpc.NodeServicer):
             return pb2.SaveReply(**reply)
 
         transfer_to = -1
-        # for node in ft:
-        #     if node.id == target_id:
-        #         transfer_to = target_id
-        #         break
-
-        # if transfer_to == -1:
-        succ_id = self.get_successor_id(chord_info, self.node_id)
+        succ_id = self.get_successor_id(chord_info, self.node_id + 1)
         if self.node_id < target_id < succ_id:
             transfer_to = succ_id
 
@@ -150,12 +158,7 @@ class Node(pb2_grpc.NodeServicer):
         key = request.key
         target_id = self.get_target_id(key)
 
-        # msg = pb2.Empty()
-        # rsp = stub.get_chord_info(msg)
         chord_info = self.chord_info()
-
-        # msg = pb2.PFTRequest(id=self.node_id)
-        # rsp = stub.populate_finger_table(msg)
         ft = self.finger_table()
 
         if self.node_id == self.get_successor_id(chord_info, target_id):
@@ -167,13 +170,7 @@ class Node(pb2_grpc.NodeServicer):
             return pb2.RemoveReply(**reply)
 
         transfer_to = -1
-        # for node in chord_info:
-        #     if node.id == target_id:
-        #         transfer_to = target_id
-        #         break
-
-        # if transfer_to == -1:
-        succ_id = self.get_successor_id(chord_info, self.node_id)
+        succ_id = self.get_successor_id(chord_info, self.node_id + 1)
         if self.node_id < target_id < succ_id:
             transfer_to = succ_id
 
@@ -191,12 +188,7 @@ class Node(pb2_grpc.NodeServicer):
         key = request.key
         target_id = self.get_target_id(key)
 
-        # msg = pb2.Empty()
-        # rsp = stub.get_chord_info(msg)
         chord_info = self.chord_info()
-
-        # msg = pb2.PFTRequest(id=self.node_id)
-        # rsp = stub.populate_finger_table(msg)
         ft = self.finger_table()
 
         if self.node_id == self.get_successor_id(chord_info, target_id):
@@ -207,13 +199,7 @@ class Node(pb2_grpc.NodeServicer):
             return pb2.FindReply(**reply)
 
         transfer_to = -1
-        # for node in info:
-        #     if node.id == target_id:
-        #         transfer_to = target_id
-        #         break
-
-        # if transfer_to == -1:
-        succ_id = self.get_successor_id(chord_info, self.node_id)
+        succ_id = self.get_successor_id(chord_info, self.node_id + 1)
         if self.node_id < target_id < succ_id:
             transfer_to = succ_id
 
@@ -229,6 +215,7 @@ class Node(pb2_grpc.NodeServicer):
 
     def quit(self):
         msg = pb2.DeregisterRequest(id=self.node_id)
+        self.transfer_keys_to_successor()
         rsp = stub.deregister(msg)
         if not rsp.stat:
             print('The node did not pass registration')
@@ -269,19 +256,17 @@ if __name__ == '__main__':
     registry_port = sys.argv[1].split(':')[1]
     ipaddr = sys.argv[2].split(':')[0]
     port = sys.argv[2].split(':')[1]
-    # registry_ipaddr = '127.0.0.1'
-    # registry_port = '5000'
-    # ipaddr = '127.0.0.1'
-    # port = '5001'
 
     channel = grpc.insecure_channel(f'{registry_ipaddr}:{registry_port}')
     stub = pb2_grpc.RegistryStub(channel)
 
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    pb2_grpc.add_NodeServicer_to_server(Node(port, ipaddr), server)
+    node = Node(port, ipaddr)
+    pb2_grpc.add_NodeServicer_to_server(node, server)
     server.add_insecure_port(f'{ipaddr}:{port}')
     server.start()
     try:
         server.wait_for_termination()
     except KeyboardInterrupt:
+        node.quit()
         print('shutting down')

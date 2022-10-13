@@ -92,3 +92,4 @@ if __name__ == "__main__":
             print("Wrong command")
 
     print("Terminating")
+    channel.close()
