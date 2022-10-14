@@ -29,11 +29,14 @@ if __name__ == "__main__":
                     connected_registry = True
                     print(response.reply)
                 except:
-                    stub = pb2_grpc.NodeStub(channel)
-                    msg = pb2.Empty()
-                    response = stub.who_am_i(msg)
-                    connected_node = True
-                    print(response.reply)
+                    try:
+                        stub = pb2_grpc.NodeStub(channel)
+                        msg = pb2.Empty()
+                        response = stub.who_am_i(msg)
+                        connected_node = True
+                        print(response.reply)
+                    except:
+                        print("There is no such node or registry")
 
             elif command == "get_info":
                 if connected_registry:

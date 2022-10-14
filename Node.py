@@ -1,4 +1,6 @@
 import sys
+from threading import Thread
+from time import sleep
 import grpc
 import zlib
 import chord_pb2_grpc as pb2_grpc
@@ -15,12 +17,26 @@ class Node(pb2_grpc.NodeServicer):
         msg = pb2.RegisterRequest(ipaddr=ipaddr, port=port)
         rsp = stub.register(msg)
         self.node_id = rsp.id
+
         if rsp.id == -1:
             self.quit()
+
         self.m = rsp.m
+        self.ft = self.finger_table()
 
         if len(self.chord_info()) > 1:
             self.get_saved_keys_from_successor()
+
+        self.upd_ft = Thread(self.update_finger_table())
+        self.upd_ft.start()
+
+    def update_finger_table(self):
+        try:
+            while True:
+                self.ft = self.finger_table()
+                sleep(1)
+        except:
+            print('Node is not registered')
 
     def get_saved_keys_from_successor(self):
         info = self.chord_info()
@@ -97,9 +113,7 @@ class Node(pb2_grpc.NodeServicer):
         return rsp.ci
 
     def get_finger_table(self, request, context):
-        # msg = pb2.PFTRequest(id=self.node_id)
-        # rsp = stub.populate_finger_table(msg)
-        reply = {'ft': self.finger_table()}
+        reply = {'ft': self.ft}
         return pb2.GFTReply(**reply)
 
     @staticmethod
